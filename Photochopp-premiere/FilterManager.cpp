@@ -92,6 +92,14 @@ cv::Mat FilterManager::ApplyFilters(cv::Mat input_frame, char user_input)
     output_frame.copyTo(input_frame);
   }
 
+  if (rotate_by_90_degrees_ > 0) {
+    auto angle = rotate_by_90_degrees_ * 90;
+    cv::Point2f input_frame_center(input_frame.cols / 2.0F, input_frame.rows / 2.0F);
+    cv::Mat rotation_matrix = getRotationMatrix2D(input_frame_center, angle, 1.0);
+    cv::warpAffine(input_frame, output_frame, rotation_matrix, input_frame.size());
+    output_frame.copyTo(input_frame);
+  }
+
   return output_frame;
 }
 
