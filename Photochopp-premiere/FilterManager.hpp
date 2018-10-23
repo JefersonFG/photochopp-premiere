@@ -18,8 +18,10 @@ public:
 
   /**
    * Processes the user input and applies filters to the input frame
+   * Saves the frame with the filters applied on video_output skipping
+   * filters that change the image size
    */
-  cv::Mat ApplyFilters(cv::Mat input_frame, char user_input);
+  cv::Mat ApplyFilters(cv::Mat input_frame, char user_input, cv::VideoWriter& output_video);
 
 private:
   /**

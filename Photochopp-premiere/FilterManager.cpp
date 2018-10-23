@@ -31,7 +31,7 @@ void FilterManager::ResetFilters()
   mirror_vertically_ = false;
 }
 
-cv::Mat FilterManager::ApplyFilters(cv::Mat input_frame, char user_input)
+cv::Mat FilterManager::ApplyFilters(cv::Mat input_frame, char user_input, cv::VideoWriter& output_video)
 {
   UpdateFilters(user_input);
 
@@ -46,6 +46,7 @@ cv::Mat FilterManager::ApplyFilters(cv::Mat input_frame, char user_input)
 
   if (detect_edges_) {
     cv::Canny(input_frame, output_frame, 75, 225);
+    cv::cvtColor(output_frame, output_frame, cv::COLOR_GRAY2BGR);
     output_frame.copyTo(input_frame);
   }
 
@@ -83,8 +84,21 @@ cv::Mat FilterManager::ApplyFilters(cv::Mat input_frame, char user_input)
 
   if (convert_grayscale_) {
     cv::cvtColor(input_frame, output_frame, cv::COLOR_BGR2GRAY);
+    cv::cvtColor(output_frame, output_frame, cv::COLOR_GRAY2BGR);
     output_frame.copyTo(input_frame);
   }
+
+  if (mirror_horizontally_) {
+    cv::flip(input_frame, output_frame, 1);
+    output_frame.copyTo(input_frame);
+  }
+
+  if (mirror_vertically_) {
+    cv::flip(input_frame, output_frame, 0);
+    output_frame.copyTo(input_frame);
+  }
+
+  output_video.write(output_frame);
 
   if (resize_half_ > 0) {
     double new_size_proportion = 1.0 / (resize_half_ + 1);
@@ -97,16 +111,6 @@ cv::Mat FilterManager::ApplyFilters(cv::Mat input_frame, char user_input)
     cv::Point2f input_frame_center(input_frame.cols / 2.0F, input_frame.rows / 2.0F);
     cv::Mat rotation_matrix = getRotationMatrix2D(input_frame_center, angle, 1.0);
     cv::warpAffine(input_frame, output_frame, rotation_matrix, input_frame.size());
-    output_frame.copyTo(input_frame);
-  }
-
-  if (mirror_horizontally_) {
-    cv::flip(input_frame, output_frame, 1);
-    output_frame.copyTo(input_frame);
-  }
-
-  if (mirror_vertically_) {
-    cv::flip(input_frame, output_frame, 0);
     output_frame.copyTo(input_frame);
   }
 

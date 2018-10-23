@@ -14,4 +14,3 @@ Z - Resize video to half on each dimension
 R - Rotate video by 90 degrees  
 H - Mirror video horizontally  
 V - Mirror video vertically  
-S - Save video to disc with all applied effects (except rotation and resizing)  
