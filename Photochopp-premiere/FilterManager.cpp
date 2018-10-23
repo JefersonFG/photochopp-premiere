@@ -6,12 +6,17 @@ namespace premiere {
 
 FilterManager::FilterManager()
 {
+  blur_trackpad_on_ = false;
   ResetFilters();
 }
 
 void FilterManager::ResetFilters()
 {
+  if (blur_trackpad_on_)
+    cv::destroyWindow(window_name);
+
   blur_size_ = 0;
+  blur_trackpad_on_ = false;
   detect_edges_ = false;
   get_gradient_ = false;
   adjust_brightness_ = 0;
@@ -31,8 +36,15 @@ cv::Mat FilterManager::ApplyFilters(cv::Mat input_frame, char user_input)
   cv::Mat output_frame;
   input_frame.copyTo(output_frame);
 
+  if (blur_trackpad_on_) {
+    auto kernel_size = blur_size_ * 2 + 1;
+    cv::GaussianBlur(input_frame, output_frame, cv::Size(kernel_size, kernel_size), 0, 0);
+    output_frame.copyTo(input_frame);
+  }
+
   if (detect_edges_) {
     cv::Canny(input_frame, output_frame, 75, 225);
+    output_frame.copyTo(input_frame);
   }
 
   return output_frame;
@@ -45,8 +57,11 @@ void FilterManager::UpdateFilters(char user_input)
     ResetFilters();
     break;
   case 'b':
-    // TODO(jfguimaraes) Create trackbar to get blur size
-    blur_size_ = 0;
+    if (blur_trackpad_on_)
+      cv::destroyWindow(window_name);
+    else
+      cv::createTrackbar("Blur", window_name, &blur_size_, 12);
+    blur_trackpad_on_ = !blur_trackpad_on_;
     break;
   case 'e':
     detect_edges_ = !detect_edges_;

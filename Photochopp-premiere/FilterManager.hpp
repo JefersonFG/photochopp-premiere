@@ -33,6 +33,7 @@ private:
   void UpdateFilters(char user_input);
 
   int blur_size_;
+  bool blur_trackpad_on_;
   bool detect_edges_;
   bool get_gradient_;
   int adjust_brightness_;
