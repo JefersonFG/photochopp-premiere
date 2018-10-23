@@ -81,6 +81,11 @@ cv::Mat FilterManager::ApplyFilters(cv::Mat input_frame, char user_input)
     output_frame.copyTo(input_frame);
   }
 
+  if (convert_grayscale_) {
+    cv::cvtColor(input_frame, output_frame, cv::COLOR_BGR2GRAY);
+    output_frame.copyTo(input_frame);
+  }
+
   return output_frame;
 }
 
