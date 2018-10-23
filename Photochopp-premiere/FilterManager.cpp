@@ -47,6 +47,23 @@ cv::Mat FilterManager::ApplyFilters(cv::Mat input_frame, char user_input)
     output_frame.copyTo(input_frame);
   }
 
+  if (get_gradient_) {
+    cv::Mat grad_x;
+    cv::Mat grad_y;
+    cv::Mat abs_grad_x;
+    cv::Mat abs_grad_y;
+
+    cv::Sobel(input_frame, grad_x, CV_32F, 1, 0);
+    cv::Sobel(input_frame, grad_y, CV_32F, 0, 1);
+
+    cv::convertScaleAbs(grad_x, abs_grad_x);
+    cv::convertScaleAbs(grad_y, abs_grad_y);
+
+    cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, output_frame);
+
+    output_frame.copyTo(input_frame);
+  }
+
   return output_frame;
 }
 
