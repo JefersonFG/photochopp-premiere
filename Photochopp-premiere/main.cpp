@@ -2,6 +2,7 @@
 
 #include <opencv2/opencv.hpp>
 
+#include "Constants.hpp"
 #include "FilterManager.hpp"
 
 int main(int argc, char** argv)
@@ -27,9 +28,13 @@ int main(int argc, char** argv)
 
     auto output_frame = filter_manager.ApplyFilters(input_frame, user_input);
 
-    imshow("Capture", output_frame);
+    imshow(premiere::window_name, output_frame);
 
     user_input = cv::waitKey(10);
+
+    if (user_input == 's') {
+      // TODO(jfguimaraes) Save video
+    }
   } while (user_input != 27);
 
   cap.release();
