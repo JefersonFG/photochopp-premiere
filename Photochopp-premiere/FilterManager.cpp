@@ -100,6 +100,16 @@ cv::Mat FilterManager::ApplyFilters(cv::Mat input_frame, char user_input)
     output_frame.copyTo(input_frame);
   }
 
+  if (mirror_horizontally_) {
+    cv::flip(input_frame, output_frame, 1);
+    output_frame.copyTo(input_frame);
+  }
+
+  if (mirror_vertically_) {
+    cv::flip(input_frame, output_frame, 0);
+    output_frame.copyTo(input_frame);
+  }
+
   return output_frame;
 }
 
@@ -144,8 +154,10 @@ void FilterManager::UpdateFilters(char user_input)
     break;
   case 'h':
     mirror_horizontally_ = !mirror_horizontally_;
+    break;
   case 'v':
     mirror_vertically_ = !mirror_vertically_;
+    break;
   }
 
   if (blur_trackpad_on_)
