@@ -86,6 +86,12 @@ cv::Mat FilterManager::ApplyFilters(cv::Mat input_frame, char user_input)
     output_frame.copyTo(input_frame);
   }
 
+  if (resize_half_ > 0) {
+    double new_size_proportion = 1.0 / (resize_half_ + 1);
+    cv::resize(input_frame, output_frame, cv::Size(), new_size_proportion, new_size_proportion, CV_INTER_AREA);
+    output_frame.copyTo(input_frame);
+  }
+
   return output_frame;
 }
 
