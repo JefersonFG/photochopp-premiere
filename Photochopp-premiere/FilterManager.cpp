@@ -12,15 +12,17 @@ FilterManager::FilterManager()
 
 void FilterManager::ResetFilters()
 {
-  if (blur_trackpad_on_)
+  if (blur_trackpad_on_ || brightness_trackbar_on_ || contrast_trackbar_on_)
     cv::destroyWindow(window_name);
 
   blur_size_ = 0;
   blur_trackpad_on_ = false;
   detect_edges_ = false;
   get_gradient_ = false;
-  adjust_brightness_ = 0;
-  adjust_contrast_ = 0;
+  brightness_adjust_value_ = 0;
+  brightness_trackbar_on_ = false;
+  contrast_adjust_value_ = 0;
+  contrast_trackbar_on_ = false;
   show_negative_ = false;
   convert_grayscale_ = false;
   resize_half_ = 0;
@@ -64,6 +66,21 @@ cv::Mat FilterManager::ApplyFilters(cv::Mat input_frame, char user_input)
     output_frame.copyTo(input_frame);
   }
 
+  if (brightness_trackbar_on_) {
+    input_frame.convertTo(output_frame, -1, 1, brightness_adjust_value_ - 50);
+    output_frame.copyTo(input_frame);
+  }
+
+  if (contrast_trackbar_on_) {
+    input_frame.convertTo(output_frame, -1, contrast_adjust_value_ + 1, 0);
+    output_frame.copyTo(input_frame);
+  }
+
+  if (show_negative_) {
+    cv::bitwise_not(input_frame, output_frame);
+    output_frame.copyTo(input_frame);
+  }
+
   return output_frame;
 }
 
@@ -76,8 +93,6 @@ void FilterManager::UpdateFilters(char user_input)
   case 'b':
     if (blur_trackpad_on_)
       cv::destroyWindow(window_name);
-    else
-      cv::createTrackbar("Blur", window_name, &blur_size_, 12);
     blur_trackpad_on_ = !blur_trackpad_on_;
     break;
   case 'e':
@@ -87,12 +102,14 @@ void FilterManager::UpdateFilters(char user_input)
     get_gradient_ = !get_gradient_;
     break;
   case 'i':
-    // TODO(jfguimaraes) Get new brightness value
-    adjust_brightness_ = 0;
+    if (brightness_trackbar_on_)
+      cv::destroyWindow(window_name);
+    brightness_trackbar_on_ = !brightness_trackbar_on_;
     break;
   case 'c':
-    // TODO(jfguimaraes) Get new brightness value
-    adjust_contrast_ = 0;
+    if (contrast_trackbar_on_)
+      cv::destroyWindow(window_name);
+    contrast_trackbar_on_ = !contrast_trackbar_on_;
     break;
   case 'n':
     show_negative_ = !show_negative_;
@@ -112,10 +129,12 @@ void FilterManager::UpdateFilters(char user_input)
     mirror_vertically_ = !mirror_vertically_;
   }
 
-  resize_half_ = 0;
-  rotate_by_90_degrees_ = 0;
-  mirror_horizontally_ = false;
-  mirror_vertically_ = false;
+  if (blur_trackpad_on_)
+    cv::createTrackbar("Blur", window_name, &blur_size_, 12);
+  if (brightness_trackbar_on_)
+    cv::createTrackbar("Brightness", window_name, &brightness_adjust_value_, 100);
+  if (contrast_trackbar_on_)
+    cv::createTrackbar("Contrast", window_name, &contrast_adjust_value_, 12);
 }
 
 } // namespace premiere

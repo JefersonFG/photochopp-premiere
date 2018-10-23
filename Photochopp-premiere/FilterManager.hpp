@@ -36,8 +36,10 @@ private:
   bool blur_trackpad_on_;
   bool detect_edges_;
   bool get_gradient_;
-  int adjust_brightness_;
-  int adjust_contrast_;
+  int brightness_adjust_value_;
+  bool brightness_trackbar_on_;
+  int contrast_adjust_value_;
+  bool contrast_trackbar_on_;
   bool show_negative_;
   bool convert_grayscale_;
   int resize_half_;
